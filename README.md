@@ -1,6 +1,6 @@
-# imcflutter
+# Calculadora de IMC
 
-A new Flutter project.
+Projeto feito para o desafio DIO em flutter
 
 ## Getting Started
 
