@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hive_flutter/adapters.dart';
+import 'package:imcflutter/config/imc_save.dart';
 import 'package:imcflutter/pages/models/imc.dart';
 import 'package:imcflutter/shared/widgets/appcolors.dart';
 import 'package:imcflutter/shared/widgets/tabletext.dart';
@@ -18,9 +20,9 @@ class _PaginaInicialState extends State<PaginaInicial> {
   String resultadoimc = "";
   String imcvalor = "";
   String notacao = "";
-  List <String> historico = [];
   IMC imcuser = IMC(0, 0);
   final _formkey = GlobalKey<FormState>();
+  final box = Hive.box<ImcSave>('imc');
   // fim das variáveis
 
   @override
@@ -124,6 +126,8 @@ class _PaginaInicialState extends State<PaginaInicial> {
               ],
             )),
         
+
+
             TextButton(onPressed: (){ //Calcuar
                     
               if (_formkey.currentState!.validate()) {
@@ -136,8 +140,16 @@ class _PaginaInicialState extends State<PaginaInicial> {
                 resultadoimc = imcuser.resultadoimc();
                 imcvalor = imcuser.getimc.toString();
                 notacao = "kg/m²";
-                
-                historico.add("$imcvalor $notacao - $resultadoimc");
+
+                box.add(
+                  ImcSave(peso: imcuser.getpeso,
+                          altura: imcuser.getalturacm,
+                          imc: imcuser.getimc,
+                          classificacao: resultadoimc,
+                          data: DateTime.now())
+
+                );
+
                     
                 FocusScope.of(context).requestFocus(FocusNode());
                 pesocontroller.clear(); alturacontroller.clear();     
@@ -154,8 +166,8 @@ class _PaginaInicialState extends State<PaginaInicial> {
 
             ),
             TextButton(onPressed: () { //limpar
+              box.clear();
               setState(() {
-                historico.clear();
               });
               
             }, child: Text("Limpar")),
@@ -171,17 +183,36 @@ class _PaginaInicialState extends State<PaginaInicial> {
               ],
             ),
             SizedBox(height: 10),
-            ListView.builder(
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              itemCount: historico.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  leading: Icon(Icons.history, color: Appcolors.bluedark,),
-                  title: Text(historico[index]),
-                );
-              }
-              ),
+            ValueListenableBuilder(
+              valueListenable: box.listenable(),
+              builder: (context, box, _) {
+                if (box.isEmpty) {
+                  return const Text("Nenhum histórico");
+                }
+
+                return ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: box.length,
+                  itemBuilder: (context, index) {
+                    final item = box.getAt(index);
+
+                    if (item == null) return const SizedBox.shrink();
+
+                    return ListTile(
+                      leading: Icon(Icons.history, color: Appcolors.bluedark),
+                      title: Text(
+                        "${item.imc.toStringAsFixed(2)} Kg/m² - ${item.classificacao}"
+                      ),
+
+                      subtitle: Text(
+                        "${item.data.day}/${item.data.month}/${item.data.year}"
+                      ),
+                    );
+                  }
+                  );
+              })
+            ,
             
         
             

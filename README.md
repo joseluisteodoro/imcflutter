@@ -2,14 +2,22 @@
 
 Projeto feito para o desafio DIO em flutter.
 
-## Getting Started
-This project is a starting point for a Flutter application.
+## Introdução
+Este aplicativo conta com uma calculadora IMC, que você pode utilizar para acompanhar a sua alteração de peso e IMC.
 
-A few resources to get you started if this is your first Flutter project:
+Após inserir peso e altura, e clicar em calcular, o resultado ficará gravado em uma lista abaixo da calculadora.
+Se desejar você pode clicar em "Limpar" para apagar o histórico.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## Como a conta é feita?
+O IMC é dado pela divisão do peso pela altura ao quadrado:
+* IMC = peso/altura²
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+
+E sua notação é Kg/m²
+
+## Tecnologias utilizadas
+- Dart
+- Flutter
+## Dependências
+- Hive
+
